@@ -1,0 +1,43 @@
+---
+
+# Copy App data
+
+- name: Unpack concrete 5.7.5.3
+  unarchive: src="concrete5.7.5.3.zip" dest="/var/www/html" owner=apache group=apache mode=0755
+
+- name: MV App dir.
+  shell: mv /var/www/html/concrete5.7.5.3/* /var/www/html/
+
+- name: chown /var/www/html
+  file: path=/var/www/html state=directory recurse=yes owner=apache group=apache
+
+- name: Set permission to app directory
+  shell: find /var/www/html/ -type d -exec chmod 755 {} \;
+
+- name: Set Permission to app files
+  shell: find /var/www/html/ -type f -exec chmod 644 {} \;
+
+# init db
+
+- name: Install mysql-python package for ansible configuration
+  yum: name=MySQL-python state=present
+
+- name: ensure anonymous users are not in the database
+  mysql_user: name='' state=absent
+  ignore_errors: yes
+
+- name: remove the test database
+  mysql_db: name=test state=absent
+  ignore_errors: yes
+
+- name: update mysql root password for all root accounts
+  mysql_user: name=root password={{ mysql_root_password }} state=present
+  ignore_errors: yes
+
+# create concrete5 db
+
+- name: Create C5 database
+  mysql_db: name={{ db_name }} collation=utf8_general_ci encoding=utf8 state=present login_user=root login_password={{ mysql_root_password }}
+
+- name: Create C5 database user
+  mysql_user: name={{ db_user }} password={{ db_password }} priv={{ db_name }}.*:ALL host='localhost' state=present login_user=root  login_password={{ mysql_root_password }}

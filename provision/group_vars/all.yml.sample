@@ -1,0 +1,15 @@
+---
+# MySql port
+mysql_port: 3306
+
+# MySql pass
+mysql_root_password: Passw0rd!
+
+# DB USER
+db_user: c5user
+
+# DB NAME
+db_name: c5db
+
+# DB PASSWORD
+db_password: password

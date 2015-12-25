@@ -1,0 +1,45 @@
+---
+- name: Install LAMP Basic.
+  yum: name={{ item }} state=present
+  with_items:
+    - httpd
+    - mysql-server
+    - php
+    - php-mysql
+
+- name: Install LAMP Optional.
+  yum: name={{ item }} state=present
+  with_items:
+    - httpd-devel
+    - mysql-devel
+    - php-common
+    - php-mbstring
+    - php-gd
+    - php-mcrypt
+    - php-xml
+
+- name: Dev tools.
+  yum: name={{ item }} state=present
+  with_items:
+    - vim
+
+- name: Create httpd(2.2) configuration file
+  template: src=httpd.2.2.conf.j2 dest=/etc/httpd/conf/httpd.conf backup=yes
+
+- name: add user vagrant to apache group
+  user: name=vagrant append=yes groups="apache"
+
+- name: add user apache to vagrant group
+  user: name=apache append=yes groups="vagrant"
+
+- name: Start httpd
+  service: name=httpd state=started enabled=yes
+
+- name: chown /var/www/html/
+  file: path=/var/www/html/ state=directory mode=0770 owner=apache group=apache
+
+- name: Create Mysql configuration file
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+
+- name: Start mysqld
+  service: name=mysqld state=started enabled=yes
