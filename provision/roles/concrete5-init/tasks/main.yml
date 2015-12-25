@@ -8,14 +8,14 @@
 - name: MV App dir.
   shell: mv /var/www/html/concrete5.7.5.3/* /var/www/html/
 
-- name: chown /var/www/html
-  file: path=/var/www/html state=directory recurse=yes owner=apache group=apache
-
 - name: Set permission to app directory
-  shell: find /var/www/html/ -type d -exec chmod 755 {} \;
+  shell: find /var/www/html/ -type d -exec chmod 775 {} \;
 
 - name: Set Permission to app files
-  shell: find /var/www/html/ -type f -exec chmod 644 {} \;
+  shell: find /var/www/html/ -type f -exec chmod 664 {} \;
+
+- name: chown /var/www/html
+  file: path=/var/www/html state=directory recurse=yes owner=apache group=apache
 
 # init db
 
